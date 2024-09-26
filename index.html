@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>张三的个人简历</title>
+    <style>
+        /* 基础样式 */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f3f5;
+        }
+        #container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background-color: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        #resume {
+            padding: 60px;
+        }
+        
+        /* 头部样式 */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+        .avatar-container {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background-color: #3498db;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .name-title {
+            flex-grow: 1;
+        }
+        h1 {
+            font-size: 3em;
+            color: #2c3e50;
+            margin: 0 0 10px 0;
+            letter-spacing: 1px;
+        }
+        h2 {
+            font-size: 1.5em;
+            color: #3498db;
+            margin: 0;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+        
+        /* 区块样式 */
+        section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+        
+        /* 列表样式 */
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 15px;
+        }
+        
+        /* 技能样式 */
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .skill {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+        .skill:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        /* 响应式布局 */
+        @media (max-width: 768px) {
+            #container {
+                margin: 20px;
+            }
+            #resume {
+                padding: 30px;
+            }
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .avatar-container {
+                margin-right: 0;
+                margin-bottom: 30px;
+            }
+        }
+        
+        /* 新增样式 */
+        .summary {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        .project, .certification {
+            margin-bottom: 20px;
+        }
+        .project h4, .certification h4 {
+            margin-bottom: 5px;
+        }
+        .project-description, .certification-details {
+            margin-left: 20px;
+        }
+        .language {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        .skill-level {
+            font-size: 0.8em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="resume">
+            <div class="header">
+                <div class="avatar-container" id="avatar-container">
+                    <!-- 默认头像 SVG 将在这里通过 JavaScript 添加 -->
+                </div>
+                <div class="name-title">
+                    <h1 id="name"></h1>
+                    <h2 id="title"></h2>
+                </div>
+            </div>
+            
+            <p id="summary" class="summary"></p>
+            
+            <section>
+                <h3>联系方式</h3>
+                <ul id="contact"></ul>
+            </section>
+            
+            <section>
+                <h3>教育背景</h3>
+                <ul id="education"></ul>
+            </section>
+            
+            <section>
+                <h3>工作经验</h3>
+                <ul id="experience"></ul>
+            </section>
+            
+            <section>
+                <h3>技能</h3>
+                <div id="skills" class="skills"></div>
+            </section>
+            
+            <section>
+                <h3>语言能力</h3>
+                <div id="languages"></div>
+            </section>
+            
+            <section>
+                <h3>项目经验</h3>
+                <div id="projects"></div>
+            </section>
+            
+            <section>
+                <h3>证书</h3>
+                <div id="certifications"></div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // 默认头像 SVG
+        const defaultAvatar = `
+            <svg class="avatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="50" cy="35" r="25" fill="#fff"/>
+                <circle cx="50" cy="100" r="40" fill="#fff"/>
+            </svg>
+        `;
+
+        // 嵌入的简历数据
+        const resumeData = {
+            "name": "张三",
+            "title": "高级Web开发工程师",
+            "avatarUrl": "",
+            "summary": "拥有5年Web开发经验的全栈工程师，专注于创建高性能、可扩展的Web应用。热衷于新技术学习和团队协作。",
+            "contact": {
+                "email": "zhangsan@example.com",
+                "phone": "123-456-7890",
+                "address": "北京市朝阳区",
+                "linkedin": "linkedin.com/in/zhangsan",
+                "github": "github.com/zhangsan"
+            },
+            "education": [
+                {
+                    "degree": "计算机科学硕士",
+                    "school": "清华大学",
+                    "year": "2019-2021"
+                },
+                {
+                    "degree": "计算机科学学士",
+                    "school": "北京大学",
+                    "year": "2015-2019"
+                }
+            ],
+            "experience": [
+                {
+                    "title": "高级Web开发工程师",
+                    "company": "ABC科技有限公司",
+                    "location": "北京",
+                    "period": "2021年7月 - 至今",
+                    "responsibilities": [
+                        "领导团队开发和维护公司核心产品，提高用户满意度20%",
+                        "优化前端性能，使页面加载速度提升40%",
+                        "设计并实施微服务架构，提高系统可扩展性",
+                        "指导初级开发人员，组织每周技术分享会"
+                    ]
+                },
+                {
+                    "title": "Web开发工程师",
+                    "company": "XYZ互联网公司",
+                    "location": "上海",
+                    "period": "2019年7月 - 2021年6月",
+                    "responsibilities": [
+                        "参与开发公司电子商务平台，负责用户界面和后端API开发",
+                        "实现响应式设计，确保在各种设备上的最佳用户体验",
+                        "集成第三方支付系统，提高交易成功率15%"
+                    ]
+                }
+            ],
+            "skills": [
+                {"name": "HTML5/CSS3", "level": "精通"},
+                {"name": "JavaScript", "level": "精通"},
+                {"name": "React", "level": "精通"},
+                {"name": "Vue.js", "level": "熟练"},
+                {"name": "Node.js", "level": "熟练"},
+                {"name": "Express", "level": "熟练"},
+                {"name": "MongoDB", "level": "熟练"},
+                {"name": "Git", "level": "熟练"},
+                {"name": "Webpack", "level": "熟练"},
+                {"name": "Docker", "level": "熟悉"}
+            ],
+            "languages": [
+                {"name": "中文", "level": "母语"},
+                {"name": "英语", "level": "流利"}
+            ],
+            "projects": [
+                {
+                    "name": "在线教育平台",
+                    "description": "开发了一个支持实时视频课程和互动问答的在线教育平台",
+                    "technologies": ["React", "Node.js", "WebRTC", "MongoDB"],
+                    "link": "https://example.com/project1"
+                },
+                {
+                    "name": "企业资源管理系统",
+                    "description": "设计并实现了一个综合的企业资源管理系统，整合了人力资源、财务和库存管理模块",
+                    "technologies": ["Vue.js", "Express", "PostgreSQL", "Docker"],
+                    "link": "https://example.com/project2"
+                }
+            ],
+            "certifications": [
+                {
+                    "name": "AWS Certified Developer - Associate",
+                    "issuer": "Amazon Web Services",
+                    "year": 2022
+                },
+                {
+                    "name": "Google Cloud Certified - Professional Cloud Architect",
+                    "issuer": "Google",
+                    "year": 2021
+                }
+            ]
+        };
+
+        // 渲染页面
+        document.getElementById('name').textContent = resumeData.name;
+        document.getElementById('title').textContent = resumeData.title;
+        document.getElementById('summary').textContent = resumeData.summary;
+
+        // 处理头像
+        const avatarContainer = document.getElementById('avatar-container');
+        if (resumeData.avatarUrl) {
+            const img = document.createElement('img');
+            img.src = resumeData.avatarUrl;
+            img.alt = resumeData.name + '的头像';
+            img.className = 'avatar';
+            avatarContainer.appendChild(img);
+        } else {
+            avatarContainer.innerHTML = defaultAvatar;
+        }
+
+        const contactList = document.getElementById('contact');
+        for (const [key, value] of Object.entries(resumeData.contact)) {
+            const li = document.createElement('li');
+            li.textContent = `${key}: ${value}`;
+            contactList.appendChild(li);
+        }
+
+        const educationList = document.getElementById('education');
+        resumeData.education.forEach(edu => {
+            const li = document.createElement('li');
+            li.textContent = `${edu.degree} - ${edu.school} (${edu.year})`;
+            educationList.appendChild(li);
+        });
+
+        const experienceList = document.getElementById('experience');
+        resumeData.experience.forEach(job => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <h4>${job.title} - ${job.company}, ${job.location}</h4>
+                <p>${job.period}</p>
+                <ul>
+                    ${job.responsibilities.map(resp => `<li>${resp}</li>`).join('')}
+                </ul>
+            `;
+            experienceList.appendChild(li);
+        });
+
+        const skillsContainer = document.getElementById('skills');
+        resumeData.skills.forEach(skill => {
+            const span = document.createElement('span');
+            span.className = 'skill';
+            span.innerHTML = `${skill.name} <span class="skill-level">(${skill.level})</span>`;
+            skillsContainer.appendChild(span);
+        });
+
+        const languagesContainer = document.getElementById('languages');
+        resumeData.languages.forEach(lang => {
+            const div = document.createElement('div');
+            div.className = 'language';
+            div.textContent = `${lang.name}: ${lang.level}`;
+            languagesContainer.appendChild(div);
+        });
+
+        const projectsContainer = document.getElementById('projects');
+        resumeData.projects.forEach(project => {
+            const div = document.createElement('div');
+            div.className = 'project';
+            div.innerHTML = `
+                <h4>${project.name}</h4>
+                <div class="project-description">
+                    <p>${project.description}</p>
+                    <p>技术栈: ${project.technologies.join(', ')}</p>
+                    <p>链接: <a href="${project.link}" target="_blank">${project.link}</a></p>
+                </div>
+            `;
+            projectsContainer.appendChild(div);
+        });
+
+        const certificationsContainer = document.getElementById('certifications');
+        resumeData.certifications.forEach(cert => {
+            const div = document.createElement('div');
+            div.className = 'certification';
+            div.innerHTML = `
+                <h4>${cert.name}</h4>
+                <div class="certification-details">
+                    <p>颁发机构: ${cert.issuer}</p>
+                    <p>获得年份: ${cert.year}</p>
+                </div>
+            `;
+            certificationsContainer.appendChild(div);
+        });
+    </script>
+</body>
+</html>
